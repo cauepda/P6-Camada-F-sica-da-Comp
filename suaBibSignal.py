@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.fftpack import fft
-from scipy import signal as window
 
 class signalMeu:
     def __init__(self):
@@ -9,7 +8,7 @@ class signalMeu:
 
     def calcFFT(self, sinal, fs):
         N = len(sinal)
-        W = window.hamming(N)
+        W = np.hamming(N)  # Usando a função hamming do NumPy
         T = 1 / fs
         xf = np.linspace(0.0, 1.0 / (2.0 * T), N // 2)
         yf = fft(sinal * W)
