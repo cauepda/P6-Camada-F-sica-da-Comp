@@ -6,6 +6,20 @@ import matplotlib.pyplot as plt
 import time
 from scipy.signal import find_peaks
 
+from scipy.signal import butter, lfilter
+
+def butter_bandpass(lowcut, highcut, fs, order=5):
+    nyq = 0.5 * fs  # Frequência de Nyquist
+    low = lowcut / nyq
+    high = highcut / nyq
+    b, a = butter(order, [low, high], btype='band')
+    return b, a
+
+def butter_bandpass_filter(data, lowcut=650, highcut=1600, fs=44100, order=5):
+    b, a = butter_bandpass(lowcut, highcut, fs, order=order)
+    y = lfilter(b, a, data)
+    return y
+
 
 def main():
     # Instanciar a classe do sinal
@@ -18,8 +32,8 @@ def main():
     duracao = 2  # Duração da gravação em segundos
     numAmostras = int(duracao * fs)
 
-    print("A captura de áudio começará em 3 segundos...")
-    time.sleep(3)
+    # print("A captura de áudio começará em 3 segundos...")
+    # time.sleep(3)
     print("Gravando...")
     audio = sd.rec(numAmostras, samplerate=fs, channels=1)
     sd.wait()
@@ -52,9 +66,15 @@ def main():
     plt.grid()
     plt.show()
 
+
+    N = len(dados)
+    delta_f = fs / N
+    distancia = int(50 / delta_f)
+    
+    
     # Identificar os picos no domínio da frequência
     # Ajustar os parâmetros de altura e distância conforme necessário
-    picos, propriedades = find_peaks(yf, height=0.1 * np.max(yf), distance=20)
+    picos, propriedades = find_peaks(yf, height=0.1 * np.max(yf), distance=distancia)
     freq_picos = xf[picos]
     magnitudes_picos = yf[picos]
 
